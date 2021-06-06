@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -28,6 +29,9 @@ func main() {
 			if _, err = connection.Write([]byte(clientRequest + "\n")); err != nil {
 				log.Printf("failed to send the client request: %v\n", err)
 			}
+			if clientRequest == "/quit" {
+				os.Exit(0)
+			}
 		case io.EOF:
 			log.Println("client closed the connection")
 			return
@@ -48,7 +52,7 @@ func getMessages(connection net.Conn){
 
 	switch err {
 	case nil:
-		log.Println(strings.TrimSpace(serverResponse))
+		fmt.Println(strings.TrimSpace(serverResponse))
 	case io.EOF:
 		log.Println("server closed the connection")
 		return
