@@ -10,9 +10,9 @@ import (
 )
 
 type Message struct {
-	uid int
+	uid          int
 	usr_nickname string
-	message string
+	message      string
 }
 
 var posts = []string{}
@@ -24,15 +24,11 @@ func main() {
 	}
 	defer connection.Close()
 
-
-
 	sidebar := tui.NewVBox(
 		tui.NewLabel("CHANNELS"),
 		tui.NewLabel("general"),
 		tui.NewLabel("random"),
 		tui.NewLabel(""),
-		tui.NewLabel("DIRECT MESSAGES"),
-		tui.NewLabel("slackbot"),
 		tui.NewSpacer(),
 	)
 	sidebar.SetBorder(true)
@@ -63,7 +59,6 @@ func main() {
 	chat := tui.NewVBox(historyBox, inputBox)
 	chat.SetSizePolicy(tui.Expanding, tui.Expanding)
 
-
 	root := tui.NewHBox(sidebar, chat)
 
 	ui, err := tui.New(root)
@@ -76,10 +71,10 @@ func main() {
 		clientRequest = strings.TrimSpace(clientRequest)
 		if _, err = connection.Write([]byte(clientRequest + "\n")); err != nil {
 			log.Printf("failed to send the client request: %v\n", err)
-			}
-			if clientRequest == "/quit" {
-				ui.Quit()
-			}
+		}
+		if clientRequest == "/quit" {
+			ui.Quit()
+		}
 		input.SetText("")
 	})
 
@@ -90,10 +85,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-
 }
 
-func getMessages(connection net.Conn, history *tui.Box,ui tui.UI){
+func getMessages(connection net.Conn, history *tui.Box, ui tui.UI) {
 	for {
 		serverReader := bufio.NewReader(connection)
 		serverResponse, err := serverReader.ReadString('\n')

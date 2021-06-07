@@ -11,13 +11,13 @@ import (
 )
 
 type Message struct {
-	uid int
+	uid          int
 	usr_nickname string
-	message string
+	message      string
 }
 
 type User struct {
-	uid int
+	uid      int
 	nickname string
 }
 
@@ -29,7 +29,7 @@ func main() {
 	clients := make(map[net.Conn]User)
 
 	log.Println("Launching server at port 8000...")
-	listener,err := net.Listen("tcp", ":8000")
+	listener, err := net.Listen("tcp", ":8000")
 	if err != nil {
 		log.Fatal("Listening error: ", err)
 	}
@@ -38,13 +38,13 @@ func main() {
 
 	for {
 
-		connection,err := listener.Accept()
+		connection, err := listener.Accept()
 		if err != nil {
 			log.Fatal("Connection error: ", err)
 		}
 
-		clientNum = clientNum+1
-		currClient, _  := clients[connection]
+		clientNum = clientNum + 1
+		currClient, _ := clients[connection]
 		currClient.uid = clientNum
 		currClient.nickname = ""
 		clients[connection] = currClient
@@ -74,14 +74,13 @@ func handleRequest(connection net.Conn, clients map[net.Conn]User, clientNum *in
 
 	clientNickname, _ := clientRequest.ReadString('\n')
 
-	currClient, _  := clients[connection]
+	currClient, _ := clients[connection]
 	currClient.nickname = strings.TrimSpace(clientNickname)
 	clients[connection] = currClient
 
 	clientNickname = strings.TrimSpace(clientNickname)
 	msg_string = fmt.Sprintf("%v has joined the chat", clientNickname)
-	sendMessage(0,clients[connection].nickname,msg_string)
-
+	sendMessage(0, clients[connection].nickname, msg_string)
 
 	for {
 		clientRequest, err := clientRequest.ReadString('\n')
@@ -93,19 +92,19 @@ func handleRequest(connection net.Conn, clients map[net.Conn]User, clientNum *in
 				log.Printf("Client #%v disconnected.",
 					clients[connection].uid)
 				msg := fmt.Sprintf("%v has left the chat", clientNickname)
-				sendMessage(0,clients[connection].nickname,msg)
+				sendMessage(0, clients[connection].nickname, msg)
 				delete(clients, connection)
 				*clientNum--
 				return
 			} else {
 				log.Printf("Client #%v sent: %v", clients[connection].uid, clientRequest)
-				sendMessage(clients[connection].uid,clients[connection].nickname,clientRequest)
+				sendMessage(clients[connection].uid, clients[connection].nickname, clientRequest)
 			}
 		case io.EOF:
 			log.Printf("Client #%v disconnected.",
 				clients[connection].uid)
 			msg := fmt.Sprintf("%v has left the chat", clientNickname)
-			sendMessage(0,clients[connection].nickname,msg)
+			sendMessage(0, clients[connection].nickname, msg)
 			delete(clients, connection)
 			*clientNum--
 			return
@@ -113,7 +112,7 @@ func handleRequest(connection net.Conn, clients map[net.Conn]User, clientNum *in
 			log.Printf("Client #%v disconnected.",
 				clients[connection].uid)
 			msg := fmt.Sprintf("%v has left the chat", clientNickname)
-			sendMessage(0,clients[connection].nickname,msg)
+			sendMessage(0, clients[connection].nickname, msg)
 			*clientNum--
 			return
 
@@ -130,19 +129,18 @@ func handleMessages(clients map[net.Conn]User) {
 
 		var msg_string string
 		if msg.uid != 0 {
-			msg_string = fmt.Sprintf("%v %v: %v\n",time_rn.Format("15:04"), msg.usr_nickname, msg.message)
+			msg_string = fmt.Sprintf("%v <%v>: %v\n", time_rn.Format("15:04"), msg.usr_nickname, msg.message)
 		} else {
-			msg_string = fmt.Sprintf("%v\n",  msg.message)
+			msg_string = fmt.Sprintf("%v\n", msg.message)
 		}
 
 		for client := range clients {
-			if _,err := client.Write([]byte(msg_string)); err != nil {
+			if _, err := client.Write([]byte(msg_string)); err != nil {
 				client.Close()
-				delete(clients,client)
+				delete(clients, client)
 			}
-			log.Printf("msg sent to client #%v with username %v", clients[client].uid, clients[client].nickname)
+			//log.Printf("msg sent to client #%v with username %v", clients[client].uid, clients[client].nickname)
 		}
 
 	}
 }
-
