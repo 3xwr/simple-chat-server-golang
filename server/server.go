@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"strings"
+	"time"
 )
 
 type Message struct {
@@ -125,19 +126,21 @@ func handleRequest(connection net.Conn, clients map[net.Conn]User, clientNum *in
 func handleMessages(clients map[net.Conn]User) {
 	for {
 		msg := <-broadcast
+		time_rn := time.Now()
+
 		var msg_string string
 		if msg.uid != 0 {
-			msg_string = fmt.Sprintf("%v: %v\n", msg.usr_nickname, msg.message)
+			msg_string = fmt.Sprintf("%v %v: %v\n",time_rn.Format("15:04"), msg.usr_nickname, msg.message)
 		} else {
 			msg_string = fmt.Sprintf("%v\n",  msg.message)
 		}
-
 
 		for client := range clients {
 			if _,err := client.Write([]byte(msg_string)); err != nil {
 				client.Close()
 				delete(clients,client)
 			}
+			log.Printf("msg sent to client #%v with username %v", clients[client].uid, clients[client].nickname)
 		}
 
 	}
