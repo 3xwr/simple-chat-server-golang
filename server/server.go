@@ -139,7 +139,6 @@ func handleMessages(clients map[net.Conn]User) {
 				client.Close()
 				delete(clients, client)
 			}
-			//log.Printf("msg sent to client #%v with username %v", clients[client].uid, clients[client].nickname)
 		}
 
 	}
