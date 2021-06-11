@@ -8,7 +8,7 @@ SimpleChatGo is built using a concurrent TCP server and a number of TCP clients.
 
 SimpleChatGo uses [tui-go](https://github.com/marcusolsson/tui-go) for its beautiful terminal interface.
 
-![Screenshot](example/screenshot.png)
+![Screenshot](example/sreenshot.png)
 
 ## Installing required packages
 
