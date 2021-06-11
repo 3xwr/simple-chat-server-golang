@@ -15,5 +15,6 @@ SimpleChatGo uses [tui-go](https://github.com/marcusolsson/tui-go) for its beaut
 
 ```
 go get github.com/marcusolsson/tui-go
+go get github.com/lib/pq
 ```
 
