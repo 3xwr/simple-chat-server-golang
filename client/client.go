@@ -9,12 +9,6 @@ import (
 	"strings"
 )
 
-type Message struct {
-	uid          int
-	usr_nickname string
-	message      string
-}
-
 var posts = []string{}
 
 func main() {
@@ -79,15 +73,47 @@ func main() {
 	})
 
 	go getMessages(connection, history, ui)
+
 	ui.SetKeybinding("Esc", func() { ui.Quit() })
 
 	if err := ui.Run(); err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 func getMessages(connection net.Conn, history *tui.Box, ui tui.UI) {
+	//get "Enter your nickname" message
+	prvMsgReader := bufio.NewReader(connection)
+	prvMsgResponse, err := prvMsgReader.ReadString('\n')
+	prvMsgResponse = strings.TrimRight(prvMsgResponse, "\n")
+	ui.Update(func() {
+		posts = append(posts, prvMsgResponse)
+		history.Append(tui.NewHBox(
+			tui.NewLabel(prvMsgResponse),
+		))
+	})
+
+	//get all previous messages from db
+	prvMsgResponse, err = prvMsgReader.ReadString('')
+	prvMsgResponse = strings.Trim(prvMsgResponse, "\n")
+	switch err {
+	case nil:
+		ui.Update(func() {
+			posts = append(posts, prvMsgResponse)
+			history.Append(tui.NewHBox(
+				tui.NewLabel(prvMsgResponse),
+				tui.NewSpacer(),
+			))
+		})
+	case io.EOF:
+		log.Println("server closed the connection")
+		return
+	default:
+		log.Printf("server error: %v\n", err)
+		return
+	}
+
+	//loop gets msgs from server
 	for {
 		serverReader := bufio.NewReader(connection)
 		serverResponse, err := serverReader.ReadString('\n')
