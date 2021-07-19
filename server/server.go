@@ -44,7 +44,8 @@ var db *sql.DB
 func main() {
 
 	//db connection string
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", db_host, db_port, db_user, db_password, db_name)
+	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		db_host, db_port, db_user, db_password, db_name)
 
 	//open db
 	var err error
@@ -52,7 +53,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Could not connect to the database: ", err)
 	} else {
-		log.Printf("Connection to the database is successfull")
+		log.Printf("Connection to the database is successful.")
 	}
 	defer db.Close()
 
@@ -66,7 +67,7 @@ func main() {
 	case err != nil:
 		log.Fatal(err)
 	default:
-		log.Printf("success, max user id = %v", clientNum)
+		log.Printf("Success getting users from DB, max user id = %v", clientNum)
 	}
 
 	log.Println("Launching server at port 8000...")
